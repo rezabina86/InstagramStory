@@ -34,5 +34,3 @@ Contains the business rules and interfaces.
 | `StoryUseCase`         | Combines all repos and create a composable model    |
 
 ---
-
-It was quite challenging to finish everything within 4 hours. I decided to skip implementing pagination for now, so it only displays page 0. Also, `AsyncImage` occasionally fails to load the image, and I wasn’t able to debug the issue before the task deadline.
