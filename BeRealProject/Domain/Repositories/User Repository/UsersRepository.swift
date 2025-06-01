@@ -2,7 +2,7 @@ import Combine
 import Foundation
 
 protocol UsersRepositoryType {
-    func load(page: Int)
+    func load(page: Int) async throws
     var users: AnyPublisher<[UserModel], Never> { get }
 }
 
@@ -10,26 +10,15 @@ final class UsersRepository: UsersRepositoryType {
     
     init(service: UsersServiceType) {
         self.service = service
-        Task {
-            try await loadUsersIfNecessary()
-        }
     }
     
     var users: AnyPublisher<[UserModel], Never> {
         usersSubject.eraseToAnyPublisher()
     }
     
-    // Not ideal, but within a short time (4 hours), I came up with this solution
-    func load(page: Int) {
-        Task {
-            do {
-                try await loadUsersIfNecessary()
-                appendPageUsers(page: page)
-            } catch {
-                // Handle error gracefully - could log or emit empty state - Not in the scope of this task
-                print("Failed to load page \(page): \(error)")
-            }
-        }
+    func load(page: Int) async throws {
+        try await loadUsersIfNecessary()
+        appendPageUsers(page: page)
     }
     
     private let service: UsersServiceType
@@ -39,10 +28,7 @@ final class UsersRepository: UsersRepositoryType {
     private func loadUsersIfNecessary() async throws {
         guard allPages.isEmpty else { return }
         let apiEntity = try await service.users()
-        await MainActor.run {
-            self.allPages = apiEntity.pages
-            appendPageUsers(page: 0)
-        }
+        self.allPages = apiEntity.pages
     }
     
     private func appendPageUsers(page: Int) {

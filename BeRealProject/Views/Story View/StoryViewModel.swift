@@ -33,8 +33,6 @@ final class StoryViewModel: ObservableObject {
         self.seenRepository = seenRepository
         self.likedPostsUseCase = likedPostsUseCase
         
-        storyUseCase.load(page: 0)
-        
         storyUseCase.stories
             .combineLatest(currentStoryIndexSubject)
             .map { [weak self] stories, currentIndex in

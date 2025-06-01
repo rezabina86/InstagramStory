@@ -42,7 +42,13 @@ final class HomeViewModel: ObservableObject {
                 let loaderCellState: StoryPreviewViewStateType = .loader(
                     viewState: .init(
                         id: 1000,
-                        onAppear: .fake
+                        onAppear: .init {
+                            Task { [weak self] in
+                                guard let self else { return }
+                                try await storyUseCase.load(page: currentPage)
+                                currentPage += 1
+                            }
+                        }
                     )
                 )
                 

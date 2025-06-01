@@ -4,18 +4,20 @@ struct HomeView: View {
     var body: some View {
         VStack {
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 16) {
+                LazyHStack(spacing: 16) {
                     ForEach(viewModel.viewState.stories) { story in
                         switch story {
                         case let .story(viewState):
                             StoryPreviewView(story: viewState)
                         case let .loader(viewState):
-                            Text("")
+                            Text(" ")
                                 .onAppear(perform: viewState.onAppear.action)
                         }
                     }
                 }
+                .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, 16)
+                .padding(.vertical, 4)
             }
             .padding(.vertical, 20)
             
