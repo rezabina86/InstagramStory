@@ -1,8 +1,11 @@
-# 📱 Story Feature – Clean Architecture
+# 📱 Story Feature
 
 ## 🧭 Architecture Overview
 
 ---
+
+<img width="1684" src="https://github.com/user-attachments/assets/47f4a63c-1268-46da-84c3-6f9e179a2782" />
+
 
 ## 🧱 Layers
 
