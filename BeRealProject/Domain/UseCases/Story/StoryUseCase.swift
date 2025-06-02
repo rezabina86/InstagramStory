@@ -3,7 +3,7 @@ import Foundation
 
 protocol StoryUseCaseType {
     var stories: AnyPublisher<[StoryModel], Never> { get }
-    func load(page: Int) async throws
+    func append(page: Int) async throws
 }
 
 struct StoryUseCase: StoryUseCaseType {
@@ -38,8 +38,8 @@ struct StoryUseCase: StoryUseCaseType {
         .eraseToAnyPublisher()
     }
     
-    func load(page: Int) async throws {
-        try await usersRepository.load(page: page)
+    func append(page: Int) async throws {
+        try await usersRepository.append(page: page)
     }
     
     private let usersRepository: UsersRepositoryType

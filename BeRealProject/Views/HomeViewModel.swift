@@ -45,7 +45,7 @@ final class HomeViewModel: ObservableObject {
                         onAppear: .init {
                             Task { [weak self] in
                                 guard let self else { return }
-                                try await storyUseCase.load(page: currentPage)
+                                try await storyUseCase.append(page: currentPage)
                                 currentPage += 1
                             }
                         }

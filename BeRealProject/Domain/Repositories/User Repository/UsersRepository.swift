@@ -2,7 +2,7 @@ import Combine
 import Foundation
 
 protocol UsersRepositoryType {
-    func load(page: Int) async throws
+    func append(page: Int) async throws
     var users: AnyPublisher<[UserModel], Never> { get }
 }
 
@@ -16,15 +16,15 @@ final class UsersRepository: UsersRepositoryType {
         usersSubject.eraseToAnyPublisher()
     }
     
-    func load(page: Int) async throws {
+    func append(page: Int) async throws {
         let allPages = try await usersCache.getPages()
-        appendPageUsers(page: page, allPages: allPages)
+        appendUsers(for: page, allPages: allPages)
     }
     
     private let usersCache: UsersCacheType
     private let usersSubject: CurrentValueSubject<[UserModel], Never> = .init([])
     
-    private func appendPageUsers(page: Int, allPages: [UsersAPIEntity.Page]) {
+    private func appendUsers(for page: Int, allPages: [UsersAPIEntity.Page]) {
         guard !allPages.isEmpty else { return }
         let pageIndex = page % allPages.count
         let users = allPages[pageIndex].users.map { UserModel(from: $0) }

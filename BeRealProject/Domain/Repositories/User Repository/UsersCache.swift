@@ -4,7 +4,7 @@ protocol UsersCacheType {
     func getPages() async throws -> [UsersAPIEntity.Page]
 }
 
-final class UsersCache: UsersCacheType {
+actor UsersCache: UsersCacheType {
     
     init(service: UsersServiceType) {
         self.service = service
