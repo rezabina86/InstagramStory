@@ -7,7 +7,6 @@ private enum SeenStorageStorageKey: String, CaseIterable {
 protocol SeenStorageType {
     func seenPost(_ id: String) async
     func getSeenPosts() async -> Set<String>
-    func isSeen(_ id: String) async -> Bool
 }
 
 actor SeenStorage: SeenStorageType {
@@ -27,10 +26,6 @@ actor SeenStorage: SeenStorageType {
             return Set<String>()
         }
         return Set(array)
-    }
-    
-    func isSeen(_ id: String) -> Bool {
-        return getSeenPosts().contains(id)
     }
     
     private let userDefaults: UserDefaultsType

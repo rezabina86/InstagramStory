@@ -45,8 +45,6 @@ actor LikedItemsStorage: LikedItemsStorageType {
     }
     
     private let userDefaults: UserDefaultsType
-    
-    
 }
 
 private extension UserDefaultsType {    

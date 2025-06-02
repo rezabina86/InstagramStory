@@ -8,8 +8,8 @@ protocol UsersRepositoryType {
 
 final class UsersRepository: UsersRepositoryType {
     
-    init(service: UsersServiceType) {
-        self.service = service
+    init(usersCache: UsersCacheType) {
+        self.usersCache = usersCache
     }
     
     var users: AnyPublisher<[UserModel], Never> {
@@ -17,21 +17,15 @@ final class UsersRepository: UsersRepositoryType {
     }
     
     func load(page: Int) async throws {
-        try await loadUsersIfNecessary()
-        appendPageUsers(page: page)
+        let allPages = try await usersCache.getPages()
+        appendPageUsers(page: page, allPages: allPages)
     }
     
-    private let service: UsersServiceType
+    private let usersCache: UsersCacheType
     private let usersSubject: CurrentValueSubject<[UserModel], Never> = .init([])
-    private var allPages: [UsersAPIEntity.Page] = []
     
-    private func loadUsersIfNecessary() async throws {
-        guard allPages.isEmpty else { return }
-        let apiEntity = try await service.users()
-        self.allPages = apiEntity.pages
-    }
-    
-    private func appendPageUsers(page: Int) {
+    private func appendPageUsers(page: Int, allPages: [UsersAPIEntity.Page]) {
+        guard !allPages.isEmpty else { return }
         let pageIndex = page % allPages.count
         let users = allPages[pageIndex].users.map { UserModel(from: $0) }
         var loadedUsers = usersSubject.value

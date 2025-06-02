@@ -36,7 +36,7 @@ public func injectDependencies(into container: ContainerType) {
     }
     
     container.register(in: .weakContainer) { container -> UsersRepositoryType in
-        UsersRepository(service: container.resolve())
+        UsersRepository(usersCache: container.resolve())
     }
     
     container.register { container -> StoryUseCaseType in
@@ -65,6 +65,10 @@ public func injectDependencies(into container: ContainerType) {
         HomeViewModelFactory(storyUseCase: container.resolve(),
                              storyViewModelFactory: container.resolve(),
                              modalCoordinator: container.resolve())
+    }
+    
+    container.register { container -> UsersCacheType in
+        UsersCache(service: container.resolve())
     }
 }
 

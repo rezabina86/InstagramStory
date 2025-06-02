@@ -4,7 +4,6 @@ import Foundation
 protocol SeenPostsRepositoryType {
     var seenPosts: AnyPublisher<Set<String>, Never> { get }
     func seenPost(id: String) async
-    func isSeen(id: String) async -> Bool
 }
 
 final class SeenPostsRepository: SeenPostsRepositoryType {
@@ -23,10 +22,6 @@ final class SeenPostsRepository: SeenPostsRepositoryType {
     func seenPost(id: String) async {
         await storage.seenPost(id)
         await updatePublisher()
-    }
-    
-    func isSeen(id: String) async -> Bool {
-        await storage.isSeen(id)
     }
     
     // MARK: - Privates
