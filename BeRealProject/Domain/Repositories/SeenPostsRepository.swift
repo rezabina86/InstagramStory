@@ -11,7 +11,7 @@ final class SeenPostsRepository: SeenPostsRepositoryType {
     init(storage: SeenStorageType) {
         self.storage = storage
         Task {
-            await loadInitialState()
+            await updatePublisher()
         }
     }
     
@@ -27,11 +27,6 @@ final class SeenPostsRepository: SeenPostsRepositoryType {
     // MARK: - Privates
     private let storage: SeenStorageType
     private let seenPostsSubject: CurrentValueSubject<Set<String>, Never> = .init([])
-    
-    private func loadInitialState() async {
-        let seenItems = await storage.getSeenPosts()
-        seenPostsSubject.send(seenItems)
-    }
     
     private func updatePublisher() async {
         let seenItems = await storage.getSeenPosts()

@@ -13,7 +13,7 @@ final class LikedPostsRepository: LikedPostsRepositoryType {
     init(storage: LikedItemsStorageType) {
         self.storage = storage
         Task {
-            await loadInitialState()
+            await updatePublisher()
         }
     }
     
@@ -38,11 +38,6 @@ final class LikedPostsRepository: LikedPostsRepositoryType {
     // MARK: - Privates
     private let storage: LikedItemsStorageType
     private let likedPostsSubject: CurrentValueSubject<Set<String>, Never> = .init([])
-    
-    private func loadInitialState() async {
-        let likedItems = await storage.getLikedPosts()
-        likedPostsSubject.send(likedItems)
-    }
     
     private func updatePublisher() async {
         let likedItems = await storage.getLikedPosts()

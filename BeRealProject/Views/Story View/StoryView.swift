@@ -13,32 +13,11 @@ struct StoryView: View {
                         .aspectRatio(contentMode: .fill)
                         .frame(width: geometry.size.width, height: geometry.size.height)
                         .clipped()
+                        .cornerRadius(12)
                 } placeholder: {
                     Rectangle()
                         .fill(Color.gray.opacity(0.3))
                         .frame(width: geometry.size.width, height: geometry.size.height)
-                }
-                
-                VStack(spacing: 0) {
-                    StoryHeaderView(viewState: viewModel.viewState.currentStory.headerViewState)
-                    .padding(.top, 16)
-                    
-                    Spacer()
-                    
-                    HStack {
-                        Spacer()
-                        Button {
-                            viewModel.viewState.currentStory.onTapLike.action()
-                        } label: {
-                            Image(systemName: viewModel.viewState.currentStory.isLiked ? "heart.fill" : "heart")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 24, height: 24)
-                                .foregroundStyle(Color.red)
-                                .animation(.easeInOut(duration: 0.2), value: viewModel.viewState.currentStory.isLiked)
-                        }
-                    }
-                    .padding(24)
                 }
                 
                 HStack(spacing: 0) {
@@ -59,6 +38,28 @@ struct StoryView: View {
                             viewModel.viewState.onTapRight.action()
                         }
                         .frame(width: geometry.size.width * 0.4)
+                }
+                
+                VStack(spacing: 0) {
+                    StoryHeaderView(viewState: viewModel.viewState.currentStory.headerViewState)
+                        .padding(.top, 16)
+                    
+                    Spacer()
+                    
+                    HStack {
+                        Spacer()
+                        Button {
+                            viewModel.viewState.currentStory.onTapLike.action()
+                        } label: {
+                            Image(systemName: viewModel.viewState.currentStory.isLiked ? "heart.fill" : "heart")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 24, height: 24)
+                                .foregroundStyle(Color.red)
+                                .animation(.easeInOut(duration: 0.2), value: viewModel.viewState.currentStory.isLiked)
+                        }
+                    }
+                    .padding(24)
                 }
             }
             .onChange(of: viewModel.viewState.currentStory) { old, new in
