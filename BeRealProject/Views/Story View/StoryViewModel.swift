@@ -40,18 +40,13 @@ final class StoryViewModel: ObservableObject {
                 return self?.createViewState(from: stories, currentStoryIndex: currentIndex) ?? .empty
             }
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] vs in
-                self?.viewState = vs
-            }
-            .store(in: &cancellables)
+            .assign(to: &$viewState)
     }
     
     private let currentStoryIndexSubject: CurrentValueSubject<Int, Never>
     private let modalCoordinator: ModalCoordinatorType
     private let seenRepository: SeenPostsRepositoryType
     private let likedPostsUseCase: LikedPostsUseCaseType
-    
-    private var cancellables: Set<AnyCancellable> = []
     
     private func createViewState(from stories: [StoryModel], currentStoryIndex: Int) -> StoryViewState {
         .init(

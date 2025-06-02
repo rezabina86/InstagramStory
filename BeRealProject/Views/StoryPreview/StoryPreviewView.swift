@@ -41,6 +41,7 @@ struct StoryPreviewView: View {
                     .font(.caption)
                     .foregroundColor(.primary)
                     .lineLimit(1)
+                    .frame(width: 70)
             }
         }
     }
@@ -50,7 +51,7 @@ enum StoryPreviewViewStateType: Equatable, Identifiable {
     case story(viewState: StoryPreviewViewState)
     case loader(viewState: StoryPreviewLoaderViewState)
     
-    var id: Int {
+    var id: String {
         switch self {
         case let .story(viewState):
             return viewState.id
@@ -61,7 +62,7 @@ enum StoryPreviewViewStateType: Equatable, Identifiable {
 }
 
 struct StoryPreviewViewState: Equatable {
-    let id: Int
+    let id: String
     let userName: String
     let userAvatarURL: String
     let seen: Bool
@@ -69,6 +70,6 @@ struct StoryPreviewViewState: Equatable {
 }
 
 struct StoryPreviewLoaderViewState: Equatable {
-    let id: Int
+    let id: String
     let onAppear: UserAction
 }

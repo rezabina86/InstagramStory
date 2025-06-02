@@ -29,7 +29,7 @@ final class HomeViewModel: ObservableObject {
             .map { stories in
                 let storiesState = stories.enumerated().map { index, story in
                     StoryPreviewViewStateType.story(viewState: .init(
-                            id: story.id,
+                            id: "\(story.id)",
                             userName: story.user.name,
                             userAvatarURL: story.user.profilePictureUrl,
                             seen: story.seen,
@@ -41,7 +41,7 @@ final class HomeViewModel: ObservableObject {
                 
                 let loaderCellState: StoryPreviewViewStateType = .loader(
                     viewState: .init(
-                        id: 1000,
+                        id: "loader_cell",
                         onAppear: .init {
                             Task { [weak self] in
                                 guard let self else { return }
@@ -55,17 +55,13 @@ final class HomeViewModel: ObservableObject {
                 return HomeViewState(stories: storiesState + [loaderCellState])
             }
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] vs in
-                self?.viewState = vs
-            }
-            .store(in: &cancellables)
+            .assign(to: &$viewState)
         
         
         modalCoordinator.currentDestination
             .assign(to: &$currentDestination)
     }
     
-    private var cancellables: Set<AnyCancellable> = []
     private var currentPage: Int = 0
 }
 

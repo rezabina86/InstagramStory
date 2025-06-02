@@ -10,7 +10,7 @@ struct HomeView: View {
                         case let .story(viewState):
                             StoryPreviewView(story: viewState)
                         case let .loader(viewState):
-                            Text(" ")
+                            ProgressView()
                                 .onAppear(perform: viewState.onAppear.action)
                         }
                     }
