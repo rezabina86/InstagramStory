@@ -7,19 +7,50 @@ struct StoryView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                AsyncImage(url: URL(string: viewModel.viewState.currentStory.imageURL)) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: geometry.size.width, height: geometry.size.height)
-                        .clipped()
-                        .cornerRadius(12)
-                } placeholder: {
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.3))
-                        .frame(width: geometry.size.width, height: geometry.size.height)
+                VStack {
+                    AsyncImage(url: URL(string: viewModel.viewState.currentStory.imageURL)) { phase in
+                        switch phase {
+                        case .empty:
+                            VStack {
+                                Spacer()
+                                ProgressView()
+                                Spacer()
+                            }
+                        case let .success(image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: geometry.size.width - 1)
+                                .clipped()
+                                .cornerRadius(12)
+                        case .failure:
+                            Rectangle()
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(width: geometry.size.width - 1)
+                        @unknown default:
+                            Rectangle()
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(width: geometry.size.width - 1)
+                        }
+                    }
+                    
+                    HStack {
+                        Spacer()
+                        Button {
+                            viewModel.viewState.currentStory.onTapLike.action()
+                        } label: {
+                            Image(systemName: viewModel.viewState.currentStory.isLiked ? "heart.fill" : "heart")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 24, height: 24)
+                                .foregroundStyle(Color.red)
+                                .animation(.easeInOut(duration: 0.2), value: viewModel.viewState.currentStory.isLiked)
+                        }
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 4)
                 }
-                
+
                 HStack(spacing: 0) {
                     // Left tap area - previous story
                     Rectangle()
@@ -45,21 +76,6 @@ struct StoryView: View {
                         .padding(.top, 16)
                     
                     Spacer()
-                    
-                    HStack {
-                        Spacer()
-                        Button {
-                            viewModel.viewState.currentStory.onTapLike.action()
-                        } label: {
-                            Image(systemName: viewModel.viewState.currentStory.isLiked ? "heart.fill" : "heart")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 24, height: 24)
-                                .foregroundStyle(Color.red)
-                                .animation(.easeInOut(duration: 0.2), value: viewModel.viewState.currentStory.isLiked)
-                        }
-                    }
-                    .padding(24)
                 }
             }
             .onChange(of: viewModel.viewState.currentStory) { old, new in
