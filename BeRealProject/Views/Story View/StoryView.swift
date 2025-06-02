@@ -6,82 +6,94 @@ struct StoryView: View {
     
     var body: some View {
         GeometryReader { geometry in
-            ZStack {
-                VStack {
-                    AsyncImage(url: URL(string: viewModel.viewState.currentStory.imageURL)) { phase in
-                        switch phase {
-                        case .empty:
-                            VStack {
-                                Spacer()
-                                ProgressView()
-                                Spacer()
-                            }
-                        case let .success(image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: geometry.size.width - 1)
-                                .clipped()
-                                .cornerRadius(12)
-                        case .failure:
-                            Rectangle()
-                                .fill(Color.gray.opacity(0.3))
-                                .frame(width: geometry.size.width - 1)
-                        @unknown default:
-                            Rectangle()
-                                .fill(Color.gray.opacity(0.3))
-                                .frame(width: geometry.size.width - 1)
-                        }
-                    }
-                    
-                    HStack {
+            VStack {
+                ZStack {
+                    imageView(geometry: geometry)
+                    gestureView(geometry: geometry)
+                    VStack(spacing: 0) {
+                        StoryHeaderView(viewState: viewModel.viewState.currentStory.headerViewState)
+                            .padding(.top, 16)
                         Spacer()
-                        Button {
-                            viewModel.viewState.currentStory.onTapLike.action()
-                        } label: {
-                            Image(systemName: viewModel.viewState.currentStory.isLiked ? "heart.fill" : "heart")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 24, height: 24)
-                                .foregroundStyle(Color.red)
-                                .animation(.easeInOut(duration: 0.2), value: viewModel.viewState.currentStory.isLiked)
-                        }
                     }
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 4)
-                }
-
-                HStack(spacing: 0) {
-                    // Left tap area - previous story
-                    Rectangle()
-                        .fill(Color.clear)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            viewModel.viewState.onTapLeft.action()
-                        }
-                        .frame(width: geometry.size.width * 0.4)
-                    
-                    // Right tap area - next story
-                    Rectangle()
-                        .fill(Color.clear)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            viewModel.viewState.onTapRight.action()
-                        }
-                        .frame(width: geometry.size.width * 0.4)
                 }
                 
-                VStack(spacing: 0) {
-                    StoryHeaderView(viewState: viewModel.viewState.currentStory.headerViewState)
-                        .padding(.top, 16)
-                    
+                HStack {
                     Spacer()
+                    likeButton
                 }
             }
             .onChange(of: viewModel.viewState.currentStory) { old, new in
                 guard old.id != new.id else { return }
                 viewModel.viewState.currentStory.onAppear.action()
             }
+        }
+    }
+    
+    @ViewBuilder
+    private func imageView(geometry: GeometryProxy) -> some View {
+        AsyncImage(url: URL(string: viewModel.viewState.currentStory.imageURL)) { phase in
+            switch phase {
+            case .empty:
+                VStack {
+                    Spacer()
+                    ProgressView()
+                    Spacer()
+                }
+            case let .success(image):
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: geometry.size.width - 1)
+                    .clipped()
+                    .cornerRadius(12)
+            case .failure:
+                Rectangle()
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(width: geometry.size.width - 1)
+            @unknown default:
+                Rectangle()
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(width: geometry.size.width - 1)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var likeButton: some View {
+        Button {
+            viewModel.viewState.currentStory.onTapLike.action()
+        } label: {
+            Image(systemName: viewModel.viewState.currentStory.isLiked ? "heart.fill" : "heart")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 24, height: 24)
+                .foregroundStyle(Color.red)
+                .animation(.easeInOut(duration: 0.2), value: viewModel.viewState.currentStory.isLiked)
+        }
+        .padding(.horizontal, 24)
+        .padding(.vertical, 4)
+    }
+    
+    @ViewBuilder
+    private func gestureView(geometry: GeometryProxy) -> some View {
+        HStack(spacing: 0) {
+            // Left tap area - previous story
+            Rectangle()
+                .fill(Color.clear)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    viewModel.viewState.onTapLeft.action()
+                }
+                .frame(width: geometry.size.width * 0.4)
+            
+            // Right tap area - next story
+            Rectangle()
+                .fill(Color.clear)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    viewModel.viewState.onTapRight.action()
+                }
+                .frame(width: geometry.size.width * 0.4)
         }
     }
 }
