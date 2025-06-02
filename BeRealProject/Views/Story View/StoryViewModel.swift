@@ -64,25 +64,26 @@ final class StoryViewModel: ObservableObject {
         )
     }
     
-    private func createStory(from model: StoryModel) -> StoryViewState.Story {
+    private func createStory(from story: StoryModel) -> StoryViewState.Story {
         .init(
+            id: "\(story.id)",
             headerViewState: .init(
-                userAvatarURL: model.user.profilePictureUrl,
-                userName: model.user.name,
+                userAvatarURL: story.user.profilePictureUrl,
+                userName: story.user.name,
                 onTapClose: .init { [modalCoordinator] in
                     modalCoordinator.present(nil)
                 }
             ),
-            imageURL: model.storyURL,
-            isLiked: model.liked,
+            imageURL: story.storyURL,
+            isLiked: story.liked,
             onTapLike: .init { [likedPostsUseCase] in
                 Task {
-                    await likedPostsUseCase.toggleLike(for: model.user.id)
+                    await likedPostsUseCase.toggleLike(for: story.user.id)
                 }
             },
             onAppear: .init { [seenRepository] in
                 Task {
-                    await seenRepository.seenPost(id: model.user.id)
+                    await seenRepository.seenPost(id: story.user.id)
                 }
             }
         )

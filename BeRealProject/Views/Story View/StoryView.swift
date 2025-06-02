@@ -61,10 +61,8 @@ struct StoryView: View {
                         .frame(width: geometry.size.width * 0.4)
                 }
             }
-            .onChange(of: viewModel.viewState.currentStory) { _, _ in
-                viewModel.viewState.currentStory.onAppear.action()
-            }
-            .onAppear {
+            .onChange(of: viewModel.viewState.currentStory) { old, new in
+                guard old.id != new.id else { return }
                 viewModel.viewState.currentStory.onAppear.action()
             }
         }
@@ -79,6 +77,7 @@ struct StoryViewState: Equatable {
 
 extension StoryViewState {
     struct Story: Equatable {
+        let id: String
         let headerViewState: StoryHeaderViewState
         let imageURL: String
         let isLiked: Bool
@@ -89,7 +88,18 @@ extension StoryViewState {
 
 extension StoryViewState {
     static let empty = Self(
-        currentStory: .init(headerViewState: .init(userAvatarURL: "", userName: "", onTapClose: .fake), imageURL: "", isLiked: false, onTapLike: .fake, onAppear: .fake),
+        currentStory: .init(
+            id: "",
+            headerViewState: .init(
+                userAvatarURL: "",
+                userName: "",
+                onTapClose: .fake
+            ),
+            imageURL: "",
+            isLiked: false,
+            onTapLike: .fake,
+            onAppear: .fake
+        ),
         onTapRight: .fake,
         onTapLeft: .fake
     )
