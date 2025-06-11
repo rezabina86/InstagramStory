@@ -5,13 +5,13 @@ private enum LikedItemsStorageKey: String, CaseIterable {
 }
 
 protocol LikedItemsStorageType {
-    func addLikedItem(_ id: String) async
-    func removeLikedItem(_ id: String) async
-    func getLikedPosts() async -> Set<String> 
-    func isLiked(_ id: String) async -> Bool 
+    func addLikedItem(_ id: String)
+    func removeLikedItem(_ id: String)
+    func getLikedPosts() -> Set<String>
+    func isLiked(_ id: String) -> Bool 
 }
 
-actor LikedItemsStorage: LikedItemsStorageType {
+final class LikedItemsStorage: LikedItemsStorageType {
     
     init(userDefaults: UserDefaultsType) {
         self.userDefaults = userDefaults

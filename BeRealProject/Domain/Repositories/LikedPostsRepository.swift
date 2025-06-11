@@ -3,44 +3,42 @@ import Foundation
 
 protocol LikedPostsRepositoryType {
     var likedPosts: AnyPublisher<Set<String>, Never> { get }
-    func likePost(id: String) async
-    func unlikePost(id: String) async
-    func isLiked(id: String) async -> Bool
+    func likePost(id: String)
+    func unlikePost(id: String)
+    func isLiked(id: String) -> Bool
 }
 
 final class LikedPostsRepository: LikedPostsRepositoryType {
     
     init(storage: LikedItemsStorageType) {
         self.storage = storage
-        Task {
-            await updatePublisher()
-        }
+        updatePublisher()
     }
     
     var likedPosts: AnyPublisher<Set<String>, Never> {
         likedPostsSubject.eraseToAnyPublisher()
     }
     
-    func likePost(id: String) async {
-        await storage.addLikedItem(id)
-        await updatePublisher()
+    func likePost(id: String) {
+        storage.addLikedItem(id)
+        updatePublisher()
     }
     
-    func unlikePost(id: String) async {
-        await storage.removeLikedItem(id)
-        await updatePublisher()
+    func unlikePost(id: String) {
+        storage.removeLikedItem(id)
+        updatePublisher()
     }
     
-    func isLiked(id: String) async -> Bool {
-        await storage.isLiked(id)
+    func isLiked(id: String) -> Bool {
+        storage.isLiked(id)
     }
     
     // MARK: - Privates
     private let storage: LikedItemsStorageType
     private let likedPostsSubject: CurrentValueSubject<Set<String>, Never> = .init([])
     
-    private func updatePublisher() async {
-        let likedItems = await storage.getLikedPosts()
+    private func updatePublisher() {
+        let likedItems = storage.getLikedPosts()
         likedPostsSubject.send(likedItems)
     }
 }

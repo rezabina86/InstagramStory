@@ -5,17 +5,17 @@ private enum SeenStorageStorageKey: String, CaseIterable {
 }
 
 protocol SeenStorageType {
-    func seenPost(_ id: String) async
-    func getSeenPosts() async -> Set<String>
+    func seenPost(_ id: String)
+    func getSeenPosts() -> Set<String>
 }
 
-actor SeenStorage: SeenStorageType {
+final class SeenStorage: SeenStorageType {
     
     init(userDefaults: UserDefaultsType) {
         self.userDefaults = userDefaults
     }
     
-    func seenPost(_ id: String) async {
+    func seenPost(_ id: String) {
         var seenPosts = getSeenPosts()
         seenPosts.insert(id)
         userDefaults.set(Array(seenPosts), forKey: .seen)

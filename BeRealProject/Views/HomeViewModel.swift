@@ -34,7 +34,7 @@ final class HomeViewModel: ObservableObject {
                             userAvatarURL: story.user.profilePictureUrl,
                             seen: story.seen,
                             onTap: .init {
-                                modalCoordinator.present(.story(viewModel: storyViewModelFactory.create(stories: stories, currentStoryIndex: index)))
+                                modalCoordinator.present(.story(viewModel: storyViewModelFactory.create(currentStoryIndex: index)))
                             })
                         )
                     }

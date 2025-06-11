@@ -3,33 +3,31 @@ import Foundation
 
 protocol SeenPostsRepositoryType {
     var seenPosts: AnyPublisher<Set<String>, Never> { get }
-    func seenPost(id: String) async
+    func seenPost(id: String)
 }
 
 final class SeenPostsRepository: SeenPostsRepositoryType {
     
     init(storage: SeenStorageType) {
         self.storage = storage
-        Task {
-            await updatePublisher()
-        }
+        updatePublisher()
     }
     
     var seenPosts: AnyPublisher<Set<String>, Never> {
         seenPostsSubject.eraseToAnyPublisher()
     }
     
-    func seenPost(id: String) async {
-        await storage.seenPost(id)
-        await updatePublisher()
+    func seenPost(id: String) {
+        storage.seenPost(id)
+        updatePublisher()
     }
     
     // MARK: - Privates
     private let storage: SeenStorageType
     private let seenPostsSubject: CurrentValueSubject<Set<String>, Never> = .init([])
     
-    private func updatePublisher() async {
-        let seenItems = await storage.getSeenPosts()
+    private func updatePublisher() {
+        let seenItems = storage.getSeenPosts()
         seenPostsSubject.send(seenItems)
     }
 }

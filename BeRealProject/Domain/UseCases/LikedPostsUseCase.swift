@@ -1,7 +1,7 @@
 import Foundation
 
 protocol LikedPostsUseCaseType {
-    func toggleLike(for postId: String) async
+    func toggleLike(for postId: String)
 }
 
 struct LikedPostsUseCase: LikedPostsUseCaseType {
@@ -10,12 +10,12 @@ struct LikedPostsUseCase: LikedPostsUseCaseType {
         self.repository = repository
     }
     
-    func toggleLike(for postId: String) async {
-        let isLiked = await repository.isLiked(id: postId)
+    func toggleLike(for postId: String) {
+        let isLiked = repository.isLiked(id: postId)
         if isLiked {
-            await repository.unlikePost(id: postId)
+            repository.unlikePost(id: postId)
         } else {
-            await repository.likePost(id: postId)
+            repository.likePost(id: postId)
         }
     }
     

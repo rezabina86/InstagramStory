@@ -2,7 +2,7 @@ import Combine
 import Foundation
 
 protocol StoryViewModelFactoryType {
-    func create(stories: [StoryModel], currentStoryIndex: Int) -> StoryViewModel
+    func create(currentStoryIndex: Int) -> StoryViewModel
 }
 
 struct StoryViewModelFactory: StoryViewModelFactoryType {
@@ -11,7 +11,7 @@ struct StoryViewModelFactory: StoryViewModelFactoryType {
     let seenRepository: SeenPostsRepositoryType
     let likedPostsUseCase: LikedPostsUseCaseType
     
-    func create(stories: [StoryModel], currentStoryIndex: Int) -> StoryViewModel {
+    func create(currentStoryIndex: Int) -> StoryViewModel {
         .init(currentStoryIndex: currentStoryIndex,
               storyUseCase: storyUseCase,
               modalCoordinator: modalCoordinator,
@@ -77,14 +77,10 @@ final class StoryViewModel: ObservableObject {
             imageURL: story.storyURL,
             isLiked: story.liked,
             onTapLike: .init { [likedPostsUseCase] in
-                Task {
-                    await likedPostsUseCase.toggleLike(for: story.user.id)
-                }
+                likedPostsUseCase.toggleLike(for: story.user.id)
             },
             onAppear: .init { [seenRepository] in
-                Task {
-                    await seenRepository.seenPost(id: story.user.id)
-                }
+                seenRepository.seenPost(id: story.user.id)
             }
         )
     }
