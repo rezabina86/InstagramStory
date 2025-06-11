@@ -10,13 +10,15 @@ struct StoryViewModelFactory: StoryViewModelFactoryType {
     let modalCoordinator: ModalCoordinatorType
     let seenRepository: SeenPostsRepositoryType
     let likedPostsUseCase: LikedPostsUseCaseType
+    let storyImageViewModelFactory: AsyncImageViewModelFactoryType
     
     func create(currentStoryIndex: Int) -> StoryViewModel {
         .init(currentStoryIndex: currentStoryIndex,
               storyUseCase: storyUseCase,
               modalCoordinator: modalCoordinator,
               seenRepository: seenRepository,
-              likedPostsUseCase: likedPostsUseCase)
+              likedPostsUseCase: likedPostsUseCase,
+              storyImageViewModelFactory: storyImageViewModelFactory)
     }
 }
 
@@ -27,11 +29,13 @@ final class StoryViewModel: ObservableObject {
          storyUseCase: StoryUseCaseType,
          modalCoordinator: ModalCoordinatorType,
          seenRepository: SeenPostsRepositoryType,
-         likedPostsUseCase: LikedPostsUseCaseType) {
+         likedPostsUseCase: LikedPostsUseCaseType,
+         storyImageViewModelFactory: AsyncImageViewModelFactoryType) {
         self.currentStoryIndexSubject = .init(currentStoryIndex)
         self.modalCoordinator = modalCoordinator
         self.seenRepository = seenRepository
         self.likedPostsUseCase = likedPostsUseCase
+        self.storyImageViewModelFactory = storyImageViewModelFactory
         
         storyUseCase.stories
             .combineLatest(currentStoryIndexSubject)
@@ -47,6 +51,7 @@ final class StoryViewModel: ObservableObject {
     private let modalCoordinator: ModalCoordinatorType
     private let seenRepository: SeenPostsRepositoryType
     private let likedPostsUseCase: LikedPostsUseCaseType
+    private let storyImageViewModelFactory: AsyncImageViewModelFactoryType
     
     private func createViewState(from stories: [StoryModel], currentStoryIndex: Int) -> StoryViewState {
         .init(
@@ -74,7 +79,7 @@ final class StoryViewModel: ObservableObject {
                     modalCoordinator.present(nil)
                 }
             ),
-            imageURL: story.storyURL,
+            imageViewModel: storyImageViewModelFactory.create(with: story.storyURL),
             isLiked: story.liked,
             onTapLike: .init { [likedPostsUseCase] in
                 likedPostsUseCase.toggleLike(for: story.user.id)

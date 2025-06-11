@@ -31,30 +31,11 @@ struct StoryView: View {
     
     @ViewBuilder
     private func imageView(geometry: GeometryProxy) -> some View {
-        AsyncImage(url: URL(string: viewModel.viewState.currentStory.imageURL)) { phase in
-            switch phase {
-            case .empty:
-                VStack {
-                    Spacer()
-                    ProgressView()
-                    Spacer()
-                }
-            case let .success(image):
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: geometry.size.width - 1)
-                    .clipped()
-                    .cornerRadius(12)
-            case .failure:
-                Rectangle()
-                    .fill(Color.gray.opacity(0.3))
-                    .frame(width: geometry.size.width - 1)
-            @unknown default:
-                Rectangle()
-                    .fill(Color.gray.opacity(0.3))
-                    .frame(width: geometry.size.width - 1)
-            }
+        if let imageViewModel = viewModel.viewState.currentStory.imageViewModel {
+            AsyncImageView(viewModel: imageViewModel,
+                           width: geometry.size.width - 2,
+                           cornerRadius: 12)
+            .id(imageViewModel.url)
         }
     }
     
@@ -108,7 +89,7 @@ extension StoryViewState {
     struct Story: Equatable {
         let id: String
         let headerViewState: StoryHeaderViewState
-        let imageURL: String
+        let imageViewModel: AsyncImageViewModel?
         let isLiked: Bool
         let onTapLike: UserAction
         let onAppear: UserAction
@@ -124,7 +105,7 @@ extension StoryViewState {
                 userName: "",
                 onTapClose: .fake
             ),
-            imageURL: "",
+            imageViewModel: nil,
             isLiked: false,
             onTapLike: .fake,
             onAppear: .fake

@@ -50,7 +50,8 @@ public func injectDependencies(into container: ContainerType) {
         StoryViewModelFactory(storyUseCase: container.resolve(),
                               modalCoordinator: container.resolve(),
                               seenRepository: container.resolve(),
-                              likedPostsUseCase: container.resolve())
+                              likedPostsUseCase: container.resolve(),
+                              storyImageViewModelFactory: container.resolve())
     }
     
     container.register(in: .weakContainer) { _ -> ModalCoordinatorType in
@@ -67,8 +68,16 @@ public func injectDependencies(into container: ContainerType) {
                              modalCoordinator: container.resolve())
     }
     
-    container.register { container -> UsersCacheType in
-        UsersCache(service: container.resolve())
+    container.register { _ -> URLSessionType in
+        URLSession.shared
+    }
+    
+    container.register(in: .container) { container -> ImageCacheType in
+        ImageCache(urlSession: container.resolve())
+    }
+    
+    container.register { container -> AsyncImageViewModelFactoryType in
+        AsyncImageViewModelFactory(imageCache: container.resolve())
     }
 }
 

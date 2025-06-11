@@ -1,13 +1,13 @@
 import Foundation
 
 protocol StoryRepositoryType {
-    func resourceURL(for userId: String) -> String
+    func resourceURL(for userId: String) -> URL
 }
 
 struct StoryRepository: StoryRepositoryType {
     
-    func resourceURL(for userId: String) -> String {
-        "https://picsum.photos/id/\(userId)/400/600"
+    func resourceURL(for userId: String) -> URL {
+        URL(string: "https://picsum.photos/id/\(userId)/400/600")!
     }
     
 }
