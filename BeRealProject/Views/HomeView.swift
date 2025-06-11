@@ -6,13 +6,7 @@ struct HomeView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 16) {
                     ForEach(viewModel.viewState.stories) { story in
-                        switch story {
-                        case let .story(viewState):
-                            StoryPreviewView(story: viewState)
-                        case let .loader(viewState):
-                            ProgressView()
-                                .onAppear(perform: viewState.onAppear.action)
-                        }
+                        StoryPreviewView(story: story)
                     }
                 }
                 .fixedSize(horizontal: false, vertical: true)
@@ -41,5 +35,5 @@ struct HomeView: View {
 }
 
 struct HomeViewState: Equatable {
-    let stories: [StoryPreviewViewStateType]
+    let stories: [StoryPreviewViewState]
 }

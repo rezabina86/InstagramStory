@@ -2,36 +2,34 @@ import Combine
 import Foundation
 
 protocol UsersRepositoryType {
-    func append(page: Int) async throws
     var users: AnyPublisher<[UserModel], Never> { get }
 }
 
 final class UsersRepository: UsersRepositoryType {
     
-    init(usersCache: UsersCacheType) {
-        self.usersCache = usersCache
+    init(service: UsersServiceType) {
+        self.service = service
     }
     
     var users: AnyPublisher<[UserModel], Never> {
-        usersSubject.eraseToAnyPublisher()
+        Future<[UserModel], Never> { promise in
+            Task { [weak self] in
+                guard let self else { return }
+                do {
+                    let users = try await service.users().pages
+                        .flatMap { $0.users }
+                        .map { UserModel(from: $0) }
+                    promise(.success(users))
+                } catch {
+                    promise(.success([]))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
     }
     
-    func append(page: Int) async throws {
-        let allPages = try await usersCache.getPages()
-        appendUsers(for: page, allPages: allPages)
-    }
-    
-    private let usersCache: UsersCacheType
+    private let service: UsersServiceType
     private let usersSubject: CurrentValueSubject<[UserModel], Never> = .init([])
-    
-    private func appendUsers(for page: Int, allPages: [UsersAPIEntity.Page]) {
-        guard !allPages.isEmpty else { return }
-        let pageIndex = page % allPages.count
-        let users = allPages[pageIndex].users.map { UserModel(from: $0) }
-        var loadedUsers = usersSubject.value
-        loadedUsers.append(contentsOf: users)
-        usersSubject.send(loadedUsers)
-    }
 }
 
 private extension UserModel {

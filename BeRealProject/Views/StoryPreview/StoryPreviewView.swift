@@ -47,29 +47,10 @@ struct StoryPreviewView: View {
     }
 }
 
-enum StoryPreviewViewStateType: Equatable, Identifiable {
-    case story(viewState: StoryPreviewViewState)
-    case loader(viewState: StoryPreviewLoaderViewState)
-    
-    var id: String {
-        switch self {
-        case let .story(viewState):
-            return viewState.id
-        case let .loader(viewState):
-            return viewState.id
-        }
-    }
-}
-
-struct StoryPreviewViewState: Equatable {
+struct StoryPreviewViewState: Equatable, Identifiable {
     let id: String
     let userName: String
     let userAvatarURL: String
     let seen: Bool
     let onTap: UserAction
-}
-
-struct StoryPreviewLoaderViewState: Equatable {
-    let id: String
-    let onAppear: UserAction
 }

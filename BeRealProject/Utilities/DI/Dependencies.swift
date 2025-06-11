@@ -36,7 +36,7 @@ public func injectDependencies(into container: ContainerType) {
     }
     
     container.register(in: .weakContainer) { container -> UsersRepositoryType in
-        UsersRepository(usersCache: container.resolve())
+        UsersRepository(service: container.resolve())
     }
     
     container.register { container -> StoryUseCaseType in
